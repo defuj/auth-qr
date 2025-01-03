@@ -52,6 +52,39 @@ const connectWebsocket = (token: string) => {
     getJWT(data.data.uuid)
   })
 
+  // Listen and handle events
+  centrifuge.on('connected', (context) => {
+    console.log('Connected to WebSocket', context)
+  })
+
+  centrifuge.on('disconnected', (context) => {
+    console.log('Disconnected from WebSocket', context)
+  })
+
+  centrifuge.on('message', (message) => {
+    console.log('Received message', message)
+  })
+
+  centrifuge.on('publication', (message) => {
+    console.log('Received publish', message)
+  })
+
+  centrifuge.on('join', (message) => {
+    console.log('User joined', message)
+  })
+
+  centrifuge.on('leave', (message) => {
+    console.log('User left', message)
+  })
+
+  centrifuge.on('subscribed', (context) => {
+    console.log('Subscribed to channel', context)
+  })
+
+  centrifuge.on('unsubscribed', (context) => {
+    console.log('Unsubscribed from channel', context)
+  })
+
   centrifuge.connect()
 }
 
