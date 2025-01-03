@@ -5,7 +5,7 @@
         class="flex flex-col items-center justify-center w-full h-full p-4 space-y-4 bg-gray-100"
       >
         <h1 class="text-lg font-semibold text-center">Tap to Scan</h1>
-        <button @click="takeSelfie" class="p-3 mt-2 shadow-md rounded-xl w-fit h-fit">
+        <button @click="startScanning" class="p-3 mt-2 shadow-md rounded-xl w-fit h-fit">
           <QrCode class="w-20 h-20 mx-auto" />
         </button>
 
@@ -20,16 +20,6 @@
     <template #content>
       <div class="flex flex-col items-center justify-center w-full h-full" id="mobile-layout">
         <div class="relative w-full h-full overflow-hidden bg-black">
-          <!-- <Camera
-            class="absolute top-0 left-0 w-full h-full"
-            :resolution="{
-              width: screenWidth,
-              height: screenHeight
-            }"
-            autoplay
-            ref="camera"
-          ></Camera> -->
-
           <QrcodeStream @detect="onDetect" />
           <div
             class="absolute inset-0 bg-black bg-opacity-70 before:bg-transparent before:mx-10 before:content-[''] before:absolute before:aspect-1 before:w-[calc(100%-80px)] before:rounded-lg before:bg-clip-content flex flex-col justify-center items-center"
@@ -52,14 +42,6 @@
               </div>
             </div>
           </div>
-          <!-- <div
-            class="absolute inset-0 top-0 flex flex-col items-center justify-center w-full h-full p-6 space-y-4 bg-black bg-opacity-70"
-          >
-            <h1 class="text-lg text-white">Scan Kode QR Code di Sini</h1>
-            <div
-              class="inline-block w-full overflow-hidden bg-transparent aspect-1 rounded-2xl bg-clip-content"
-            ></div>
-          </div> -->
 
           <button
             @click="openCamera = false"
@@ -236,25 +218,38 @@
 <script setup lang="ts">
 import { QrcodeStream } from 'vue-qrcode-reader'
 import LayoutProvider from '@/components/LayoutProvider.vue'
-import { onMounted, ref, watch } from 'vue'
-import { dispatchNotification } from '@/components/Notification'
-import Camera from 'simple-vue-camera'
+import { onMounted, ref } from 'vue'
 import { CloseIcon } from '@/components/Notification/icons'
 import QrCode from '@/components/icons/QrCode.vue'
 import Flashlight from '@/components/icons/Flashlight.vue'
+import { requestAuthData } from '@/api/api'
+import { useDialogStore } from '@/stores/dialog'
 
 const openCamera = ref<boolean>(false)
-const camera = ref<InstanceType<typeof Camera>>()
-const picture = ref<Blob | null | undefined>(null)
 const screenWidth = ref(window.innerWidth)
 const screenHeight = ref(window.innerHeight)
 const codeResult = ref<string>('')
+const dialog = useDialogStore()
 
-const onDetect = (code: string) => {
+const onDetect = async (code: string) => {
   if (code !== '') {
     openCamera.value = false
     codeResult.value = code
     // Do something with the detected code
+    dialog.startProgress()
+    await requestAuthData({
+      uuid: code
+    })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        console.log('done')
+        dialog.stopProgress()
+      })
   }
 }
 
@@ -262,53 +257,9 @@ const onFlashlight = () => {
   // Turn on/off flashlight
 }
 
-const selectCamera = async (cameraId: string) => {
-  if (import.meta.env.DEV) {
-    console.log('cameraId', cameraId)
-  }
-  await camera.value?.changeCamera(cameraId)
-}
-
-const changeCamera = async () => {
-  const devices = (await camera.value?.devices()) ?? []
-  const currentDeviceID = camera.value?.currentDeviceID()
-  if (devices.length > 1) {
-    const videoDevices = devices.filter((device) => device.kind === 'videoinput')
-    const nextDevice = videoDevices.find((device) => device.deviceId !== currentDeviceID)
-    selectCamera(nextDevice?.deviceId ?? currentDeviceID ?? '')
-  }
-}
-
-const snapshot = async () => {
-  picture.value = await camera.value?.snapshot()
-
-  // To show the screenshot with an image tag, create a url
-  if (picture.value) {
-    openCamera.value = false
-    const url = URL.createObjectURL(picture.value)
-    //
-  } else {
-    dispatchNotification({
-      title: 'Gagal mengambil foto',
-      content: 'Silahkan coba lagi',
-      type: 'error'
-    })
-    openCamera.value = false
-  }
-}
-
-const takeSelfie = async () => {
+const startScanning = async () => {
   openCamera.value = true
 }
-
-watch(camera, async (value) => {
-  if (value) {
-    if (import.meta.env.DEV) {
-      const devices = await value?.devices()
-      console.table(devices)
-    }
-  }
-})
 
 onMounted(async () => {
   let cam = document.getElementById('mobile-layout')
