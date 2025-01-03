@@ -20,7 +20,7 @@
     <template #content>
       <div class="flex flex-col items-center justify-center w-full h-full" id="mobile-layout">
         <div class="relative w-full h-full overflow-hidden bg-black">
-          <QrcodeStream @detect="onDetect" />
+          <QrcodeStream @detect="onDetect" @camera-on="onCameraOn" :torch="torchActive" />
           <div
             class="absolute inset-0 bg-black bg-opacity-70 before:bg-transparent before:mx-10 before:content-[''] before:absolute before:aspect-1 before:w-[calc(100%-80px)] before:rounded-lg before:bg-clip-content flex flex-col justify-center items-center"
           >
@@ -54,7 +54,8 @@
             @click="onFlashlight"
             class="absolute top-0 right-0 flex items-center justify-center w-10 h-10 m-2 bg-black bg-opacity-50 rounded-full cursor-pointer"
           >
-            <Flashlight class="w-6 h-6 text-white" />
+            <FlashlightOn v-if="torchActive" class="w-6 h-6 text-white" />
+            <Flashlight v-else class="w-6 h-6 text-white" />
           </button>
         </div>
       </div>
@@ -224,7 +225,14 @@ import QrCode from '@/components/icons/QrCode.vue'
 import Flashlight from '@/components/icons/Flashlight.vue'
 import { requestAuthData } from '@/api/api'
 import { useDialogStore } from '@/stores/dialog'
+import { dispatchNotification } from '@/components/Notification'
+import FlashlightOn from '@/components/icons/FlashlightOn.vue'
 
+const selected = ref(null as MediaDeviceInfo | null)
+const devices = ref([] as MediaDeviceInfo[])
+
+const torchActive = ref(false)
+const torchSupported = ref(false)
 const openCamera = ref<boolean>(false)
 const screenWidth = ref(window.innerWidth)
 const screenHeight = ref(window.innerHeight)
@@ -253,8 +261,22 @@ const onDetect = async (code: string) => {
   }
 }
 
+const onCameraOn = (capabilities: any) => {
+  console.log(capabilities)
+  torchSupported.value = !!capabilities.torch
+}
+
 const onFlashlight = () => {
-  // Turn on/off flashlight
+  if (torchSupported.value) {
+    torchActive.value = !torchActive.value
+  } else {
+    dispatchNotification({
+      content: 'Torch not supported',
+      type: 'error',
+      duration: 3000,
+      title: 'Error'
+    })
+  }
 }
 
 const startScanning = async () => {
@@ -267,6 +289,14 @@ onMounted(async () => {
     console.log('cam width', cam.clientWidth)
     screenWidth.value = cam.clientWidth
     screenHeight.value = cam.clientHeight
+  }
+
+  devices.value = (await navigator.mediaDevices.enumerateDevices()).filter(
+    ({ kind }) => kind === 'videoinput'
+  )
+
+  if (devices.value.length > 0) {
+    selected.value = devices.value[0]
   }
 })
 </script>
