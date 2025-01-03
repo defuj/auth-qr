@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  html {
+    @apply scroll-smooth bg-white;
+  }
+  body {
+    @apply h-dvh overflow-y-hidden;
+  }
+  #app {
+    @apply h-full overflow-y-hidden;
+  }
+  .width-mobile {
+    @apply w-full md:w-[450px];
+  }
+  .page-content {
+    @apply w-full mt-14 mb-4;
+  }
+  .basic-card {
+    @apply w-full p-4 bg-white rounded-xl shadow-md;
+  }
+  .menu-card {
+    @apply bg-white border rounded-md border-gray-200 p-2;
+  }
+  .nav-bg-active {
+    @apply bg-green-50 transition-all duration-300 px-5;
+  }
+  .nav-bg {
+    @apply transition-all duration-300 px-1;
+  }
+  .nav-icon {
+    @apply text-gray-600 transition-all duration-300;
+  }
+  .nav-icon-active {
+    @apply text-green-600 transition-all duration-300;
+  }
+  .nav-text {
+    @apply text-gray-700 text-xs text-center transition-all duration-300;
+  }
+  .nav-text-active {
+    @apply text-green-600 font-bold text-xs text-center transition-all duration-300;
+  }
+}
