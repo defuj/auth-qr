@@ -62,6 +62,7 @@ const getJWT = async (uuid: string) => {
   })
     .then((res) => {
       if (res.data?.token) {
+        isLogged.value = true
         writeData('token', res.data?.token)
       }
     })
