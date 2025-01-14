@@ -2,12 +2,11 @@
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div
-      class="w-full max-w-full p-6 m-6 space-y-8 bg-white rounded-lg shadow-md md:max-w-md md:p-8 md:m-0"
+      class="w-full max-w-full p-6 m-6 space-y-8 bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
     >
       <div>
         <h2 class="text-3xl font-extrabold text-center text-gray-900">
           <span class="block text-indigo-600">Create an Account</span>
-          <span class="block">Register</span>
         </h2>
       </div>
       <form class="mt-8 space-y-6" @submit.prevent="confirmRegister">

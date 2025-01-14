@@ -1,15 +1,16 @@
 <template>
-  <LayoutProvider v-if="!loading">
-    <template #content>
-      <div class="flex flex-col items-center justify-center w-full h-full space-y-4 bg-white">
-        <div class="text-2xl font-semibold text-center text-gray-800">
-          {{ isLogged ? 'Login Successfully' : 'Scan QR' }}
-        </div>
-
+  <div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div
+      class="w-full max-w-full p-6 m-6 space-y-8 bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
+    >
+      <div>
+        <h2 class="text-3xl font-extrabold text-center text-gray-900">
+          <span v-if="isLogged" class="block text-indigo-600">Welcome Back!</span>
+          <span v-else class="block">Scan QR</span>
+        </h2>
+      </div>
+      <div v-if="!isLogged" class="mt-8 space-y-6">
         <QRCodeVue3
-          v-if="!isLogged"
-          :width="300"
-          :height="300"
           :value="qrData"
           :qrOptions="{ typeNumber: 0, mode: 'Byte', errorCorrectionLevel: 'H' }"
           :imageOptions="{ hideBackgroundDots: true, imageSize: 0.4, margin: 0 }"
@@ -21,17 +22,16 @@
           :cornersSquareOptions="{ type: 'extra-rounded', color: '#000000' }"
           :cornersDotOptions="{ type: 'extra-rounded', color: '#000000' }"
           :download="false"
-          myclass=""
-          imgclass=""
+          myclass="w-full h-full"
+          imgclass="w-full h-auto object-contain"
         />
       </div>
-    </template>
-  </LayoutProvider>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { requestQRData, requestQrSession } from '@/api/api'
-import LayoutProvider from '@/components/LayoutProvider.vue'
 import { useDialogStore } from '@/stores/dialog'
 import { writeData } from '@/utils/storage'
 import { Centrifuge } from 'centrifuge'
@@ -157,5 +157,15 @@ onMounted(async () => {
       dialog.stopProgress()
       loading.value = false
     })
+
+  if (import.meta.env.DEV) {
+    const uuid = 'dbb62d54-3e53-4f6d-8f37-18a2ae1f4898'
+    const websocket_token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY5NTM2OTgsInN1YiI6InB1YmxpYzozMyJ9.tjTvG7Ftj3xUFTIU9BDEAxfw1GqLMjFks18wgZBFuuQ'
+    const channel_name = 'public:33'
+
+    qrData.value = uuid
+    connectWebsocket(websocket_token, channel_name)
+  }
 })
 </script>
