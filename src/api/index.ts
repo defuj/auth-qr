@@ -2,7 +2,7 @@ import { readData } from '@/utils/storage'
 import axios from 'axios'
 
 export const apiService = (contentType = 'application/json') => {
-  const token = readData('token') || ''
+  const token = readData('access')
   const request = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
@@ -14,7 +14,9 @@ export const apiService = (contentType = 'application/json') => {
   })
   request.interceptors.request.use((config) => {
     config.headers.set('User-Agent', false)
-    config.headers.set('Authorization', `Bearer ${token}`)
+    if (token) {
+      config.headers.set('Authorization', `Bearer ${token}`)
+    }
 
     return config
   })

@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Auth from '@/views/Auth.vue'
 import NotSupported from '@/views/NotSupported.vue'
 import Scan from '@/views/Scan.vue'
+import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,7 +11,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/scan'
+      redirect: '/login'
     },
     {
       path: '/not-support',
@@ -24,7 +26,20 @@ const router = createRouter({
     {
       path: '/scan',
       name: 'Scan',
-      component: Scan
+      component: Scan,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register
     }
   ]
 })

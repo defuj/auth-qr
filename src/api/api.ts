@@ -1,11 +1,17 @@
 import { apiService } from '@/api'
 
 const endpoint = {
-  qr: '/auth/qr',
-  jwt: '/auth/jwt',
-  auth: '/auth/verify'
+  login: '/login',
+  register: '/register',
+  generateQR: '/generate-qr',
+  scanQr: '/scan-qr',
+  getQrSession: '/get-qr-session'
 }
 
-export const requestQRData = async () => await apiService().get(endpoint.qr)
-export const requestJWTData = async (data: any) => await apiService().post(endpoint.jwt, data)
-export const requestAuthData = async (data: any) => await apiService().post(endpoint.auth, data)
+export const requestLoginData = async (data: any) => await apiService().post(endpoint.login, data)
+export const requestRegisterData = async (data: any) =>
+  await apiService().post(endpoint.register, data)
+export const requestQRData = async () => await apiService().get(endpoint.generateQR)
+export const requestByQr = async (data: any) => await apiService().post(endpoint.scanQr, data)
+export const requestQrSession = async (data: any) =>
+  await apiService().post(endpoint.getQrSession, data)

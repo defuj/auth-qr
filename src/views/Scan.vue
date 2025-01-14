@@ -223,7 +223,7 @@ import { onMounted, ref } from 'vue'
 import { CloseIcon } from '@/components/Notification/icons'
 import QrCode from '@/components/icons/QrCode.vue'
 import Flashlight from '@/components/icons/Flashlight.vue'
-import { requestAuthData } from '@/api/api'
+import { requestByQr } from '@/api/api'
 import { useDialogStore } from '@/stores/dialog'
 import { dispatchNotification } from '@/components/Notification'
 import FlashlightOn from '@/components/icons/FlashlightOn.vue'
@@ -245,24 +245,44 @@ const onDetect = async (code: string) => {
     codeResult.value = code
     // Do something with the detected code
     dialog.startProgress()
-    await requestAuthData({
+    await requestByQr({
       uuid: code
     })
       .then((res) => {
-        console.log(res)
+        // if result 'uuid' is available, save it to localStorage
+        // else, show error message
+        if (res.data?.uuid) {
+          dialog.createDialog({
+            title: 'Success',
+            message: 'Successfully logged in',
+            type: 'success',
+            confirmText: 'OK'
+          })
+        } else {
+          dialog.createDialog({
+            title: 'Error',
+            message: res.data.message ?? 'Something went wrong',
+            type: 'error',
+            confirmText: 'OK'
+          })
+        }
       })
       .catch((err) => {
         console.log(err)
+        dialog.createDialog({
+          title: 'Error',
+          message: err.response.data.message ?? 'Something went wrong',
+          type: 'error',
+          confirmText: 'OK'
+        })
       })
       .finally(() => {
-        console.log('done')
         dialog.stopProgress()
       })
   }
 }
 
 const onCameraOn = (capabilities: any) => {
-  console.log(capabilities)
   torchSupported.value = !!capabilities.torch
 }
 
