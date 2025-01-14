@@ -1,7 +1,9 @@
 <!-- filepath: /Users/defuj/Developments/Website/vuejs/auth-qr/src/views/Login.vue -->
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+    <div
+      class="w-full max-w-full p-6 m-6 space-y-8 bg-white rounded-lg shadow-md md:max-w-md md:p-8 md:m-0"
+    >
       <div>
         <h2 class="text-3xl font-extrabold text-center text-gray-900">
           <span class="block text-indigo-600">Welcome Back!</span>

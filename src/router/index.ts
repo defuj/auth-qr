@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Auth from '@/views/Auth.vue'
 import NotSupported from '@/views/NotSupported.vue'
 import Scan from '@/views/Scan.vue'
 import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
+import GenerateQr from '@/views/GenerateQr.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,9 +19,9 @@ const router = createRouter({
       component: NotSupported
     },
     {
-      path: '/auth',
-      name: 'auth',
-      component: Auth
+      path: '/qr',
+      name: 'Generate QR',
+      component: GenerateQr
     },
     {
       path: '/scan',

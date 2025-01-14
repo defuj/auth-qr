@@ -63,6 +63,11 @@ const connectWebsocket = (token: string, channel_name: string) => {
   sub
     .on('publication', function (ctx) {
       console.log('Received publish', ctx)
+      if (ctx.data?.event) {
+        if (ctx.data?.event === 'qrscan') {
+          getJWT(qrData.value)
+        }
+      }
     })
     .on('subscribing', function (ctx) {
       console.log(`Subscribing to channel`, ctx)
@@ -77,46 +82,6 @@ const connectWebsocket = (token: string, channel_name: string) => {
       console.log(`error`, ctx)
     })
     .subscribe()
-
-  // const sub = centrifuge.newSubscription(channel_name)
-  // sub.on('publication', (data) => {
-  //   // getJWT(data.data.uuid)
-  //   console.log('Publication', data)
-  // })
-  // // Listen and handle events
-  // centrifuge.on('connected', (context) => {
-  //   console.log('Connected to WebSocket', context)
-  // })
-
-  // centrifuge.on('disconnected', (context) => {
-  //   console.log('Disconnected from WebSocket', context)
-  // })
-
-  // centrifuge.on('message', (message) => {
-  //   console.log('Received message', message)
-  // })
-
-  // centrifuge.on('publication', (message) => {
-  //   console.log('Received publish', message)
-  // })
-
-  // centrifuge.on('join', (message) => {
-  //   console.log('User joined', message)
-  // })
-
-  // centrifuge.on('leave', (message) => {
-  //   console.log('User left', message)
-  // })
-
-  // centrifuge.on('subscribed', (context) => {
-  //   console.log('Subscribed to channel', context)
-  // })
-
-  // centrifuge.on('unsubscribed', (context) => {
-  //   console.log('Unsubscribed from channel', context)
-  // })
-
-  // centrifuge.connect()
 }
 
 const getJWT = async (uuid: string) => {
@@ -163,10 +128,10 @@ onMounted(async () => {
   await requestQRData()
     .then((res) => {
       if (import.meta.env.DEV) {
-        const uuid = '7bc8e087-797b-4b17-a479-3a249b6759e1'
+        const uuid = 'dbb62d54-3e53-4f6d-8f37-18a2ae1f4898'
         const websocket_token =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzk0NTU1NzQsInN1YiI6Ilx0In0.bKKUKe4I3OZoUKXUOhnqd07jVEwioJdN20JFGDbqJro'
-        const channel_name = 'user:9'
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY5NTM2OTgsInN1YiI6InB1YmxpYzozMyJ9.tjTvG7Ftj3xUFTIU9BDEAxfw1GqLMjFks18wgZBFuuQ'
+        const channel_name = 'public:33'
 
         qrData.value = uuid
         connectWebsocket(websocket_token, channel_name)
