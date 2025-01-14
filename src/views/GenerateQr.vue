@@ -6,7 +6,7 @@
       <div>
         <h2 class="text-3xl font-extrabold text-center text-gray-900">
           <span v-if="isLogged" class="block text-indigo-600">Welcome Back!</span>
-          <span v-else class="block">Scan QR</span>
+          <span v-else class="block">-- Scan QR --</span>
         </h2>
       </div>
       <div v-if="!isLogged" class="mt-8 space-y-6">
@@ -19,12 +19,20 @@
             color: '#000000'
           }"
           :backgroundOptions="{ color: '#ffffff' }"
-          :cornersSquareOptions="{ type: 'extra-rounded', color: '#000000' }"
-          :cornersDotOptions="{ type: 'extra-rounded', color: '#000000' }"
+          :cornersSquareOptions="{ type: 'extra-rounded', color: '#4f46e5' }"
+          :cornersDotOptions="{ type: 'extra-rounded', color: '#4f46e5' }"
           :download="false"
           myclass="w-full h-full"
           imgclass="w-full h-auto object-contain"
         />
+
+        <RouterLink
+          to="/login"
+          type="button"
+          class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Back to Login
+        </RouterLink>
       </div>
     </div>
   </div>
@@ -34,16 +42,19 @@
 import { requestQRData, requestQrSession } from '@/api/api'
 import { useDialogStore } from '@/stores/dialog'
 import { writeData } from '@/utils/storage'
-import { Centrifuge } from 'centrifuge'
+import { Centrifuge, Subscription } from 'centrifuge'
 import QRCodeVue3 from 'qrcode-vue3'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 const dialog = useDialogStore()
 const qrData = ref<string>('Hello World')
 const loading = ref<boolean>(true)
 const isLogged = ref<boolean>(false)
 
+let sub: Subscription
+let centrifuge: Centrifuge
+
 const connectWebsocket = (token: string, channel_name: string) => {
-  const centrifuge = new Centrifuge(import.meta.env.VITE_WS_URL, {
+  centrifuge = new Centrifuge(import.meta.env.VITE_WS_URL, {
     token: token
   })
 
@@ -59,7 +70,7 @@ const connectWebsocket = (token: string, channel_name: string) => {
     })
     .connect()
 
-  const sub = centrifuge.newSubscription(channel_name)
+  sub = centrifuge.newSubscription(channel_name)
   sub
     .on('publication', function (ctx) {
       console.log('Received publish', ctx)
@@ -120,6 +131,15 @@ const getJWT = async (uuid: string) => {
       dialog.stopProgress()
     })
 }
+
+onUnmounted(() => {
+  if (sub) {
+    sub.unsubscribe()
+  }
+  if (centrifuge) {
+    centrifuge.disconnect()
+  }
+})
 
 onMounted(async () => {
   document.title = 'Scan QR'

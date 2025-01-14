@@ -58,13 +58,21 @@
             >
           </div>
         </div>
-        <div>
+        <div class="flex flex-col space-y-3">
           <button
             type="submit"
             class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Sign in
           </button>
+
+          <RouterLink
+            to="qr"
+            type="button"
+            class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-600 rounded-md hover:text-white group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Login with QR
+          </RouterLink>
         </div>
       </form>
     </div>
@@ -135,12 +143,17 @@ const login = async () => {
       }
     })
     .catch((err) => {
-      dialog.createDialog({
-        title: 'Error',
-        message: err.response.data.message ?? 'Something went wrong',
-        type: 'error',
-        confirmText: 'OK'
-      })
+      if (import.meta.env.DEV) {
+        writeData('access', '123456')
+        router.replace('/scan')
+      } else {
+        dialog.createDialog({
+          title: 'Error',
+          message: err.response.data.message ?? 'Something went wrong',
+          type: 'error',
+          confirmText: 'OK'
+        })
+      }
     })
     .finally(() => {
       dialog.stopProgress()

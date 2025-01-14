@@ -4,7 +4,6 @@ import Scan from '@/views/Scan.vue'
 import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import GenerateQr from '@/views/GenerateQr.vue'
-import Main from '@/views/Main.vue'
 import { readData } from '@/utils/storage'
 
 const router = createRouter({
@@ -13,8 +12,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Main',
-      component: Main
+      redirect: '/login'
     },
     {
       path: '/not-support',

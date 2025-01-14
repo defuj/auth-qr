@@ -1,21 +1,4 @@
 <template>
-  <LayoutProvider v-if="!openCamera" class="!bg-gray-400">
-    <template #content>
-      <div
-        class="flex flex-col items-center justify-center w-full h-full p-4 space-y-4 bg-gray-100"
-      >
-        <h1 class="text-lg font-semibold text-center">Tap to Scan</h1>
-        <button @click="startScanning" class="p-3 mt-2 shadow-md rounded-xl w-fit h-fit">
-          <QrCode class="w-20 h-20 mx-auto" />
-        </button>
-
-        <h1 v-if="codeResult !== ''" class="text-xl font-semibold text-center">
-          Result : {{ codeResult }}
-        </h1>
-      </div>
-    </template>
-  </LayoutProvider>
-
   <LayoutProvider v-if="openCamera" class="!bg-gray-400">
     <template #content>
       <div class="flex flex-col items-center justify-center w-full h-full" id="mobile-layout">
@@ -44,7 +27,7 @@
           </div>
 
           <button
-            @click="openCamera = false"
+            @click="backToLogin"
             class="absolute top-0 left-0 flex items-center justify-center w-10 h-10 m-2 bg-black bg-opacity-50 rounded-full cursor-pointer"
           >
             <CloseIcon class="w-6 h-6 text-white" />
@@ -221,27 +204,30 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 import LayoutProvider from '@/components/LayoutProvider.vue'
 import { onMounted, ref } from 'vue'
 import { CloseIcon } from '@/components/Notification/icons'
-import QrCode from '@/components/icons/QrCode.vue'
 import Flashlight from '@/components/icons/Flashlight.vue'
 import { requestByQr } from '@/api/api'
 import { useDialogStore } from '@/stores/dialog'
 import { dispatchNotification } from '@/components/Notification'
 import FlashlightOn from '@/components/icons/FlashlightOn.vue'
+import router from '@/router'
 
 const selected = ref(null as MediaDeviceInfo | null)
 const devices = ref([] as MediaDeviceInfo[])
 
 const torchActive = ref(false)
 const torchSupported = ref(false)
-const openCamera = ref<boolean>(false)
+const openCamera = ref<boolean>(true)
 const screenWidth = ref(window.innerWidth)
 const screenHeight = ref(window.innerHeight)
 const codeResult = ref<string>('')
 const dialog = useDialogStore()
 
+const backToLogin = () => {
+  router.push('/login')
+}
+
 const onDetect = async (code: string) => {
   if (code !== '') {
-    openCamera.value = false
     codeResult.value = code
     // Do something with the detected code
     dialog.startProgress()
@@ -299,10 +285,6 @@ const onFlashlight = () => {
   }
 }
 
-const startScanning = async () => {
-  openCamera.value = true
-}
-
 onMounted(async () => {
   let cam = document.getElementById('mobile-layout')
   if (cam) {
@@ -311,9 +293,9 @@ onMounted(async () => {
     screenHeight.value = cam.clientHeight
   }
 
-  devices.value = (await navigator.mediaDevices.enumerateDevices()).filter(
-    ({ kind }) => kind === 'videoinput'
-  )
+  // devices.value = (await navigator.mediaDevices.enumerateDevices()).filter(
+  //   ({ kind }) => kind === 'videoinput'
+  // )
 
   if (devices.value.length > 0) {
     selected.value = devices.value[0]
