@@ -30,9 +30,10 @@
 </template>
 
 <script setup lang="ts">
-import { requestQRData } from '@/api/api'
+import { requestQRData, requestQrSession } from '@/api/api'
 import LayoutProvider from '@/components/LayoutProvider.vue'
 import { useDialogStore } from '@/stores/dialog'
+import { writeData } from '@/utils/storage'
 import { Centrifuge } from 'centrifuge'
 import QRCodeVue3 from 'qrcode-vue3'
 import { onMounted, ref } from 'vue'
@@ -119,26 +120,40 @@ const connectWebsocket = (token: string, channel_name: string) => {
 }
 
 const getJWT = async (uuid: string) => {
-  // dialog.startProgress()
-  // await requestJWTData({
-  //   uuid: uuid
-  // })
-  //   .then((res) => {
-  //     if (res.data?.token) {
-  //       isLogged.value = true
-  //       writeData('token', res.data?.token)
-  //     }
-  //   })
-  //   .catch((err) => {
-  //     dialog.createDialog({
-  //       title: 'Error',
-  //       message: err.response.data.message,
-  //       type: 'error'
-  //     })
-  //   })
-  //   .finally(() => {
-  //     dialog.stopProgress()
-  //   })
+  dialog.startProgress()
+  await requestQrSession({
+    uuid: uuid
+  })
+    .then((res) => {
+      if (res.data?.token) {
+        isLogged.value = true
+        writeData('access', res.data?.token)
+
+        dialog.createDialog({
+          title: 'Success',
+          message: 'Successfully logged in',
+          type: 'success',
+          confirmText: 'OK'
+        })
+      } else {
+        dialog.createDialog({
+          title: 'Error',
+          message: res.data.message ?? 'Something went wrong',
+          type: 'error',
+          confirmText: 'OK'
+        })
+      }
+    })
+    .catch((err) => {
+      dialog.createDialog({
+        title: 'Error',
+        message: err.response.data.message,
+        type: 'error'
+      })
+    })
+    .finally(() => {
+      dialog.stopProgress()
+    })
 }
 
 onMounted(async () => {
@@ -147,15 +162,24 @@ onMounted(async () => {
   dialog.startProgress()
   await requestQRData()
     .then((res) => {
-      // if(res.data?.uuid && res.data?.websocket_token && res.data?.channel_name) {
-      //   qrData.value = res.data?.uuid
-      //   connectWebsocket(res.data?.websocket_token, res.data?.channel_name)
-      // }
-      qrData.value = res.data?.uuid ?? '7bc8e087-797b-4b17-a479-3a249b6759e1'
-      connectWebsocket(
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzk0NTU1NzQsInN1YiI6Ilx0In0.bKKUKe4I3OZoUKXUOhnqd07jVEwioJdN20JFGDbqJro',
-        'user:9'
-      )
+      if (import.meta.env.DEV) {
+        const uuid = '7bc8e087-797b-4b17-a479-3a249b6759e1'
+        const websocket_token =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzk0NTU1NzQsInN1YiI6Ilx0In0.bKKUKe4I3OZoUKXUOhnqd07jVEwioJdN20JFGDbqJro'
+        const channel_name = 'user:9'
+
+        qrData.value = uuid
+        connectWebsocket(websocket_token, channel_name)
+      } else if (res.data?.uuid && res.data?.websocket_token && res.data?.channel_name) {
+        qrData.value = res.data?.uuid
+        connectWebsocket(res.data?.websocket_token, res.data?.channel_name)
+      } else {
+        dialog.createDialog({
+          title: 'Error',
+          message: 'Failed to get QR Data',
+          type: 'error'
+        })
+      }
     })
     .catch((err) => {
       dialog.createDialog({

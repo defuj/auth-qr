@@ -64,6 +64,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center">
             <input
+              v-model="terms"
               id="terms"
               name="terms"
               type="checkbox"
@@ -81,6 +82,15 @@
           >
             Register
           </button>
+
+          <div class="flex items-center justify-center mt-4">
+            <span class="text-sm text-gray-600">Already have an account?</span>
+            <RouterLink
+              to="/login"
+              class="ml-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+              >Login</RouterLink
+            >
+          </div>
         </div>
       </form>
     </div>
@@ -100,6 +110,7 @@ const username = ref<string>('')
 const fullname = ref<string>('')
 const password = ref<string>('')
 const confirmPassword = ref<string>('')
+const terms = ref<boolean>(false)
 
 const confirmRegister = () => {
   if (
@@ -111,6 +122,12 @@ const confirmRegister = () => {
     dispatchNotification({
       title: 'Error',
       content: 'Please fill all fields',
+      type: 'error'
+    })
+  } else if (!terms.value) {
+    dispatchNotification({
+      title: 'Error',
+      content: 'Please agree to the terms and conditions',
       type: 'error'
     })
   } else if (password.value !== confirmPassword.value) {
