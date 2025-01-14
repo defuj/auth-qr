@@ -4,6 +4,8 @@ import Scan from '@/views/Scan.vue'
 import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import GenerateQr from '@/views/GenerateQr.vue'
+import Main from '@/views/Main.vue'
+import { readData } from '@/utils/storage'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +13,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/login'
+      name: 'Main',
+      component: Main
     },
     {
       path: '/not-support',
@@ -72,13 +75,20 @@ router.beforeEach((to, from, next) => {
 
   // Redirect to main page if user access not supported page
   if (to.path === '/not-support') {
-    next('/scan')
+    next('/main')
     return
+  }
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!readData('access')) {
+      next('/login')
+      return
+    }
   }
 
   // Redirect to home page if user access not found page
   if (to.matched.length === 0) {
-    next('/scan')
+    next('/main')
     return
   }
 
