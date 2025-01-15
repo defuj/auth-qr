@@ -3,14 +3,15 @@
     <div
       class="relative w-full max-w-full p-6 m-6 space-y-8 bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
     >
-      <div>
+      <div v-if="qrData">
         <h2 class="text-3xl font-extrabold text-center text-gray-900">
           <span v-if="isLogged" class="block text-indigo-600">Welcome Back!</span>
-          <span v-else class="block">-- Scan QR --</span>
+          <span v-else class="block"> Scan QR Code Here </span>
         </h2>
       </div>
-      <div v-if="!isLogged" class="mt-8 space-y-6">
+      <div v-if="!isLogged" class="space-y-6" :class="{ 'mt-8': qrData }">
         <QRCodeVue3
+          v-if="qrData"
           :value="qrData"
           :qrOptions="{ typeNumber: 0, mode: 'Byte', errorCorrectionLevel: 'H' }"
           :imageOptions="{ hideBackgroundDots: true, imageSize: 0.4, margin: 0 }"
@@ -26,11 +27,16 @@
           imgclass="w-full h-auto object-contain"
         />
 
+        <div v-else class="flex flex-col items-center justify-center w-full aspect-1">
+          <ErrorIcon class="!w-20 !h-20 text-red-600" />
+          <h1 class="text-lg text-gray-600">Failed to generate QR Code</h1>
+        </div>
+
         <RouterLink
           v-if="!loading"
           to="/login"
           type="button"
-          class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-indigo-600 rounded-md group hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Back to Login
         </RouterLink>
@@ -49,13 +55,14 @@
 <script setup lang="ts">
 import { requestQRData, requestQrSession } from '@/api/api'
 import { Progress } from '@/components/icons'
+import { ErrorIcon } from '@/components/Notification/icons'
 import { useDialogStore } from '@/stores/dialog'
 import { writeData } from '@/utils/storage'
 import { Centrifuge, Subscription } from 'centrifuge'
 import QRCodeVue3 from 'qrcode-vue3'
 import { onMounted, onUnmounted, ref } from 'vue'
 const dialog = useDialogStore()
-const qrData = ref<string>('Hello World')
+const qrData = ref<string | null>(null)
 const loading = ref<boolean>(true)
 const isLogged = ref<boolean>(false)
 
@@ -85,7 +92,9 @@ const connectWebsocket = (token: string, channel_name: string) => {
       console.log('Received publish', ctx)
       if (ctx.data?.event) {
         if (ctx.data?.event === 'qrscan') {
-          getJWT(qrData.value)
+          if (qrData.value) {
+            getJWT(qrData.value)
+          }
         }
       }
     })
@@ -192,14 +201,14 @@ onMounted(async () => {
       loading.value = false
     })
 
-  if (import.meta.env.DEV) {
-    const uuid = 'dbb62d54-3e53-4f6d-8f37-18a2ae1f4898'
-    const websocket_token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY5NTM2OTgsInN1YiI6InB1YmxpYzozMyJ9.tjTvG7Ftj3xUFTIU9BDEAxfw1GqLMjFks18wgZBFuuQ'
-    const channel_name = 'public:33'
+  // if (import.meta.env.DEV) {
+  //   const uuid = 'dbb62d54-3e53-4f6d-8f37-18a2ae1f4898'
+  //   const websocket_token =
+  //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY5NTM2OTgsInN1YiI6InB1YmxpYzozMyJ9.tjTvG7Ftj3xUFTIU9BDEAxfw1GqLMjFks18wgZBFuuQ'
+  //   const channel_name = 'public:33'
 
-    qrData.value = uuid
-    connectWebsocket(websocket_token, channel_name)
-  }
+  //   qrData.value = uuid
+  //   connectWebsocket(websocket_token, channel_name)
+  // }
 })
 </script>
