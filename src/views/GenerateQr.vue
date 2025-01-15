@@ -120,6 +120,13 @@ const getJWT = async (uuid: string) => {
           type: 'success',
           confirmText: 'OK'
         })
+
+        if (sub) {
+          sub.unsubscribe()
+        }
+        if (centrifuge) {
+          centrifuge.disconnect()
+        }
       } else {
         dialog.createDialog({
           title: 'Error',
