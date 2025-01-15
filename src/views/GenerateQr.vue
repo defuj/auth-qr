@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div
-      class="w-full max-w-full p-6 m-6 space-y-8 bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
+      class="relative w-full max-w-full p-6 m-6 space-y-8 bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
     >
       <div>
         <h2 class="text-3xl font-extrabold text-center text-gray-900">
@@ -27,6 +27,7 @@
         />
 
         <RouterLink
+          v-if="!loading"
           to="/login"
           type="button"
           class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -34,12 +35,20 @@
           Back to Login
         </RouterLink>
       </div>
+
+      <div
+        v-if="loading"
+        class="absolute inset-0 flex items-center justify-center bg-white rounded-3xl"
+      >
+        <Progress class="w-10 h-10 text-indigo-600 animate-spin" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { requestQRData, requestQrSession } from '@/api/api'
+import { Progress } from '@/components/icons'
 import { useDialogStore } from '@/stores/dialog'
 import { writeData } from '@/utils/storage'
 import { Centrifuge, Subscription } from 'centrifuge'
@@ -144,7 +153,6 @@ onUnmounted(() => {
 onMounted(async () => {
   document.title = 'Scan QR'
   loading.value = true
-  dialog.startProgress()
   await requestQRData()
     .then((res) => {
       if (import.meta.env.DEV) {
@@ -174,7 +182,6 @@ onMounted(async () => {
       })
     })
     .finally(() => {
-      dialog.stopProgress()
       loading.value = false
     })
 
