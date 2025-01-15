@@ -130,7 +130,7 @@ const getJWT = async (uuid: string) => {
       } else {
         dialog.createDialog({
           title: 'Error',
-          message: res.data.message ?? 'Something went wrong',
+          message: res?.data?.message ?? 'Something went wrong',
           type: 'error',
           confirmText: 'OK'
         })
@@ -139,7 +139,7 @@ const getJWT = async (uuid: string) => {
     .catch((err) => {
       dialog.createDialog({
         title: 'Error',
-        message: err.response.data.message,
+        message: err?.response?.data?.message ?? 'Something went wrong',
         type: 'error'
       })
     })
@@ -184,7 +184,7 @@ onMounted(async () => {
     .catch((err) => {
       dialog.createDialog({
         title: 'Error',
-        message: err.response.data.message,
+        message: err?.response?.data?.message ?? 'Something went wrong',
         type: 'error'
       })
     })

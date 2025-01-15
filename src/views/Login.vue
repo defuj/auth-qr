@@ -130,7 +130,7 @@ const login = async () => {
       } else {
         dialog.createDialog({
           title: 'Error',
-          message: res.data.message ?? 'Something went wrong',
+          message: res?.data?.message ?? 'Something went wrong',
           type: 'error',
           confirmText: 'OK'
         })
@@ -145,7 +145,7 @@ const login = async () => {
       } else {
         dialog.createDialog({
           title: 'Error',
-          message: res.data.message ?? 'Something went wrong',
+          message: res?.data?.message ?? 'Something went wrong',
           type: 'error',
           confirmText: 'OK'
         })
@@ -154,7 +154,7 @@ const login = async () => {
     .catch((err) => {
       dialog.createDialog({
         title: 'Error',
-        message: err.response.data.message ?? 'Something went wrong',
+        message: err?.response?.data?.message ?? 'Something went wrong',
         type: 'error',
         confirmText: 'OK'
       })
