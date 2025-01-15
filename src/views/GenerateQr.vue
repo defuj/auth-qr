@@ -1,15 +1,21 @@
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div
-      class="relative w-full max-w-full p-6 m-6 space-y-8 bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
+      class="relative w-full max-w-full p-6 m-6 space-y-8 transition-all duration-300 ease-in-out bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
     >
       <div v-if="qrData">
-        <h2 class="text-3xl font-extrabold text-center text-gray-900">
+        <h2
+          class="text-3xl font-extrabold text-center text-gray-900 transition-all duration-300 ease-in-out"
+        >
           <span v-if="isLogged" class="block text-indigo-600">Welcome Back!</span>
           <span v-else class="block"> Scan QR Code Here </span>
         </h2>
       </div>
-      <div v-if="!isLogged" class="space-y-6" :class="{ 'mt-8': qrData }">
+      <div
+        v-if="!isLogged"
+        class="space-y-6 transition-all duration-300 ease-in-out"
+        :class="{ 'mt-8': qrData }"
+      >
         <QRCodeVue3
           v-if="qrData"
           :value="qrData"
@@ -23,20 +29,25 @@
           :cornersSquareOptions="{ type: 'extra-rounded', color: '#4f46e5' }"
           :cornersDotOptions="{ type: 'extra-rounded', color: '#4f46e5' }"
           :download="false"
-          myclass="w-full h-full"
-          imgclass="w-full h-auto object-contain"
+          myclass="w-full h-full transition-all duration-300 ease-in-out"
+          imgclass="w-full h-auto object-contain transition-all duration-300 ease-in-out"
         />
 
-        <div v-else class="flex flex-col items-center justify-center w-full aspect-1">
-          <ErrorIcon class="!w-20 !h-20 text-red-600" />
-          <h1 class="text-lg text-gray-600">Failed to generate QR Code</h1>
+        <div
+          v-else
+          class="flex flex-col items-center justify-center w-full transition-all duration-300 ease-in-out aspect-1"
+        >
+          <ErrorIcon class="!w-20 !h-20 text-red-600 transition-all duration-300 ease-in-out" />
+          <h1 class="text-lg text-gray-600 transition-all duration-300 ease-in-out">
+            Failed to generate QR Code
+          </h1>
         </div>
 
         <RouterLink
           v-if="!loading"
           to="/login"
           type="button"
-          class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-indigo-600 rounded-md group hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-indigo-600 transition-all duration-300 ease-in-out bg-white border border-indigo-600 rounded-md group hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Back to Login
         </RouterLink>
@@ -44,9 +55,11 @@
 
       <div
         v-if="loading"
-        class="absolute inset-0 flex items-center justify-center transition-all ease-in-out delay-150 bg-white rounded-3xl"
+        class="absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out delay-150 bg-white rounded-3xl"
       >
-        <Progress class="w-10 h-10 text-indigo-600 animate-spin" />
+        <Progress
+          class="w-10 h-10 text-indigo-600 transition-all duration-300 ease-in-out animate-spin"
+        />
       </div>
     </div>
   </div>
