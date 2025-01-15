@@ -201,14 +201,14 @@ onMounted(async () => {
       loading.value = false
     })
 
-  // if (import.meta.env.DEV) {
-  //   const uuid = 'dbb62d54-3e53-4f6d-8f37-18a2ae1f4898'
-  //   const websocket_token =
-  //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY5NTM2OTgsInN1YiI6InB1YmxpYzozMyJ9.tjTvG7Ftj3xUFTIU9BDEAxfw1GqLMjFks18wgZBFuuQ'
-  //   const channel_name = 'public:33'
+  if (import.meta.env.DEV) {
+    const uuid = 'dbb62d54-3e53-4f6d-8f37-18a2ae1f4898'
+    const websocket_token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY5NTM2OTgsInN1YiI6InB1YmxpYzozMyJ9.tjTvG7Ftj3xUFTIU9BDEAxfw1GqLMjFks18wgZBFuuQ'
+    const channel_name = 'public:33'
 
-  //   qrData.value = uuid
-  //   connectWebsocket(websocket_token, channel_name)
-  // }
+    qrData.value = uuid
+    connectWebsocket(websocket_token, channel_name)
+  }
 })
 </script>
