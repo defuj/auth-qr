@@ -44,7 +44,7 @@
 
       <div
         v-if="loading"
-        class="absolute inset-0 flex items-center justify-center bg-white rounded-3xl"
+        class="absolute inset-0 flex items-center justify-center transition-all ease-in-out delay-150 bg-white rounded-3xl"
       >
         <Progress class="w-10 h-10 text-indigo-600 animate-spin" />
       </div>
