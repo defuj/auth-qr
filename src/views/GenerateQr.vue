@@ -68,6 +68,7 @@
 <script setup lang="ts">
 import { requestQRData, requestQrSession } from '@/api/api'
 import { Progress } from '@/components/icons'
+import { dispatchNotification } from '@/components/Notification'
 import { ErrorIcon } from '@/components/Notification/icons'
 import { useDialogStore } from '@/stores/dialog'
 import { writeData } from '@/utils/storage'
@@ -196,18 +197,20 @@ onMounted(async () => {
         qrData.value = res.data?.uuid
         connectWebsocket(res.data?.websocket_token, res.data?.channel_name)
       } else {
-        dialog.createDialog({
+        dispatchNotification({
           title: 'Error',
-          message: 'Failed to get QR Data',
-          type: 'error'
+          content: 'Failed to get QR Data',
+          type: 'error',
+          duration: 3000
         })
       }
     })
     .catch((err) => {
-      dialog.createDialog({
+      dispatchNotification({
         title: 'Error',
-        message: err?.response?.data?.message ?? 'Something went wrong',
-        type: 'error'
+        content: err?.response?.data?.message ?? 'Something went wrong',
+        type: 'error',
+        duration: 3000
       })
     })
     .finally(() => {
