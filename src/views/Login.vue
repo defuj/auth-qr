@@ -77,10 +77,12 @@
       </form>
 
       <div
-        class="absolute inset-0 flex items-center justify-center bg-white rounded-3xl"
+        class="absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out bg-white rounded-3xl"
         v-if="loading"
       >
-        <Progress class="w-10 h-10 text-indigo-600 animate-spin" />
+        <Progress
+          class="w-10 h-10 text-indigo-600 transition-all duration-300 ease-in-out animate-spin"
+        />
       </div>
     </div>
   </div>
