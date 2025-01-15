@@ -73,7 +73,7 @@ router.beforeEach((to, from, next) => {
 
   // Redirect to main page if user access not supported page
   if (to.path === '/not-support') {
-    next('/main')
+    next('/login')
     return
   }
 
@@ -86,7 +86,7 @@ router.beforeEach((to, from, next) => {
 
   // Redirect to home page if user access not found page
   if (to.matched.length === 0) {
-    next('/main')
+    next('/login')
     return
   }
 

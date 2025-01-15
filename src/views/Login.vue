@@ -2,7 +2,7 @@
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div
-      class="w-full max-w-full p-6 m-6 space-y-8 bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
+      class="relative w-full max-w-full p-6 m-6 space-y-8 bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
     >
       <div>
         <h2 class="text-3xl font-extrabold text-center text-gray-900">
@@ -75,12 +75,20 @@
           </RouterLink>
         </div>
       </form>
+
+      <div
+        class="absolute inset-0 flex items-center justify-center bg-white rounded-3xl"
+        v-if="loading"
+      >
+        <Progress class="w-10 h-10 text-indigo-600 animate-spin" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { requestLoginData } from '@/api/api'
+import { Progress } from '@/components/icons'
 import { dispatchNotification } from '@/components/Notification'
 import router from '@/router'
 import { useDialogStore } from '@/stores/dialog'
@@ -91,6 +99,7 @@ const dialog = useDialogStore()
 
 const username = ref<string>('')
 const password = ref<string>('')
+const loading = ref<boolean>(false)
 
 const confirmLogin = () => {
   if (username.value != '' && password.value != '') {
@@ -106,7 +115,7 @@ const confirmLogin = () => {
 }
 
 const login = async () => {
-  dialog.startProgress()
+  loading.value = true
   await requestLoginData({
     username: username.value,
     password: password.value
@@ -143,20 +152,15 @@ const login = async () => {
       }
     })
     .catch((err) => {
-      if (import.meta.env.DEV) {
-        writeData('access', '123456')
-        router.replace('/scan')
-      } else {
-        dialog.createDialog({
-          title: 'Error',
-          message: err.response.data.message ?? 'Something went wrong',
-          type: 'error',
-          confirmText: 'OK'
-        })
-      }
+      dialog.createDialog({
+        title: 'Error',
+        message: err.response.data.message ?? 'Something went wrong',
+        type: 'error',
+        confirmText: 'OK'
+      })
     })
     .finally(() => {
-      dialog.stopProgress()
+      loading.value = false
     })
 }
 
