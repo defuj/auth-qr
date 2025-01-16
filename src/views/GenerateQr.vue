@@ -113,9 +113,11 @@ let sub: Subscription
 let centrifuge: Centrifuge
 
 const connectWebsocket = (token: string, channel_name: string) => {
-  setTimeout(() => {
-    isLogged.value = true
-  }, 5000)
+  if (import.meta.env.DEV) {
+    setTimeout(() => {
+      isLogged.value = true
+    }, 5000)
+  }
 
   centrifuge = new Centrifuge(import.meta.env.VITE_WS_URL, {
     token: token
