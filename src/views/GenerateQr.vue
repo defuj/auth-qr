@@ -3,12 +3,11 @@
     <div
       class="relative w-full max-w-full p-6 m-6 space-y-8 transition-all duration-300 ease-in-out bg-white shadow-md rounded-3xl md:max-w-md md:p-8 md:m-0"
     >
-      <div v-if="qrData">
+      <div v-if="qrData && !isLogged">
         <h2
-          class="text-3xl font-extrabold text-center text-gray-900 transition-all duration-300 ease-in-out"
+          class="text-2xl font-extrabold text-center text-gray-900 transition-all duration-300 ease-in-out"
         >
-          <span v-if="isLogged" class="block text-indigo-600">Welcome Back!</span>
-          <span v-else class="block"> Scan QR Code Here </span>
+          <span class="block"> Scan QR Code Here </span>
         </h2>
       </div>
       <div
@@ -29,8 +28,8 @@
           :cornersSquareOptions="{ type: 'extra-rounded', color: '#4f46e5' }"
           :cornersDotOptions="{ type: 'extra-rounded', color: '#4f46e5' }"
           :download="false"
-          myclass="w-full h-full transition-all duration-300 ease-in-out"
-          imgclass="w-full h-auto object-contain transition-all duration-300 ease-in-out"
+          myclass="w-full h-full transition-all duration-300 ease-in-out transform"
+          imgclass="w-full h-auto object-contain transition-all duration-300 ease-in-out transform"
         />
 
         <div
@@ -61,6 +60,36 @@
           class="w-10 h-10 text-indigo-600 transition-all duration-300 ease-in-out animate-spin"
         />
       </div>
+
+      <div
+        v-if="isLogged"
+        class="h-fit flex flex-col items-center justify-center transition-all duration-300 ease-in-out bg-white rounded-3xl"
+      >
+        <svg
+          class="w-20 h-20 text-green-500 animate-bounce"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2l4 -4"
+          />
+        </svg>
+        <h1 class="mt-4 text-2xl font-bold text-gray-900">Login Successful!</h1>
+        <p class="mt-2 text-gray-600">You have successfully logged in.</p>
+
+        <RouterLink
+          to="/login"
+          type="button"
+          class="relative mt-6 flex justify-center w-full px-4 py-2 text-sm font-medium text-green-600 transition-all duration-300 ease-in-out bg-white border border-green-600 rounded-md group hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
+        >
+          Back to Login
+        </RouterLink>
+      </div>
     </div>
   </div>
 </template>
@@ -84,6 +113,10 @@ let sub: Subscription
 let centrifuge: Centrifuge
 
 const connectWebsocket = (token: string, channel_name: string) => {
+  setTimeout(() => {
+    isLogged.value = true
+  }, 5000)
+
   centrifuge = new Centrifuge(import.meta.env.VITE_WS_URL, {
     token: token
   })
