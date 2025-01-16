@@ -156,7 +156,7 @@ const login = async () => {
     .catch((err) => {
       dialog.createDialog({
         title: 'Error',
-        message: err?.response?.data?.message ?? 'Something went wrong',
+        message: err ? err.toString() : 'Something went wrong',
         type: 'error',
         confirmText: 'OK'
       })

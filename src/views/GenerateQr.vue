@@ -128,7 +128,6 @@ const connectWebsocket = (token: string, channel_name: string) => {
 }
 
 const getJWT = async (uuid: string) => {
-  dialog.startProgress()
   await requestQrSession({
     uuid: uuid
   })
@@ -136,13 +135,6 @@ const getJWT = async (uuid: string) => {
       if (res.data?.token) {
         isLogged.value = true
         writeData('access', res.data?.token)
-
-        dialog.createDialog({
-          title: 'Success',
-          message: 'Successfully logged in',
-          type: 'success',
-          confirmText: 'OK'
-        })
 
         if (sub) {
           sub.unsubscribe()
@@ -162,7 +154,7 @@ const getJWT = async (uuid: string) => {
     .catch((err) => {
       dialog.createDialog({
         title: 'Error',
-        message: err?.response?.data?.message ?? 'Something went wrong',
+        message: err ? err.toString() : 'Something went wrong',
         type: 'error'
       })
     })
@@ -208,7 +200,7 @@ onMounted(async () => {
     .catch((err) => {
       dispatchNotification({
         title: 'Error',
-        content: err?.response?.data?.message ?? 'Something went wrong',
+        content: err ? err.toString() : 'Something went wrong',
         type: 'error',
         duration: 3000
       })
